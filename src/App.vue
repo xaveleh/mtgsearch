@@ -1,17 +1,38 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <SearchBar v-on:get-results="getResults" />
+    <ul>
+      <li v-for="(card) in results" v-bind:key="card.id">
+        {{card.name}}
+        <img v-bind:src="card.imageUrl" />
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+import SearchBar from './components/SearchBar';
+import axios from 'axios';
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    SearchBar
+  },
+  data() {
+    return {
+      results: []
+    }
+  },
+  methods: {
+    getResults(newSearchCard) {
+      const { cardName } = newSearchCard;
+      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}`)
+      .then(res => {
+        console.log(res);
+        this.results = res.data.cards.filter(card => !!card.multiverseid)})
+    },
   }
 }
 </script>
@@ -24,5 +45,13 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+img {
+  float: right;
+
+}
+li {
+  border-bottom: 1px solid black;
+  clear: both;
 }
 </style>
