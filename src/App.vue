@@ -27,8 +27,8 @@ export default {
   },
   methods: {
     getResults(newSearchCard) {
-      const { cardName } = newSearchCard;
-      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}`)
+      const { cardName, cardColor } = newSearchCard;
+      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}`)
       .then(res => {
         console.log(res);
         this.results = res.data.cards.filter(card => !!card.multiverseid)})
