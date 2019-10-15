@@ -2,9 +2,15 @@
   <div id="app">
     <SearchBar v-on:get-results="getResults" />
     <ul>
-      <li v-for="(card) in results" v-bind:key="card.id">
+      <li v-for="(card) in results" v-bind:key="card.id" id="cardinfo">
         {{card.name}}
+        <em>{{card.setName}}</em>
         <img v-bind:src="card.imageUrl" />
+        <ul v-for="(ruling) in card.rulings" v-bind:key="ruling.text">
+          <li>
+            {{ruling.text}}
+          </li>
+        </ul>
       </li>
     </ul>
   </div>
@@ -22,15 +28,15 @@ export default {
   },
   data() {
     return {
-      results: []
+      results: [],
+      rulings: []
     }
   },
   methods: {
     getResults(newSearchCard) {
-      const { cardName, cardColor } = newSearchCard;
-      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}`)
+      const { cardName, cardColor, setName, cardType } = newSearchCard;
+      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}&setName=${setName}&types=${cardType}`)
       .then(res => {
-        console.log(res);
         this.results = res.data.cards.filter(card => !!card.multiverseid)})
     },
   }
@@ -38,6 +44,9 @@ export default {
 </script>
 
 <style>
+body {
+  background: #e6ffec;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -48,10 +57,12 @@ export default {
 }
 img {
   float: right;
+  margin: 2px;
 
 }
-li {
-  border-bottom: 1px solid black;
+#cardinfo {
+  border-top: 1px dotted black;
   clear: both;
+  text-align: left;
 }
 </style>
