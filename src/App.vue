@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <SearchBar v-on:get-results="getResults" />
+    <SearchBar v-on:get-results="getResults" v-on:next-page="nextPage" v-on:prev-page="prevPage"/>
     <ul>
       <li v-for="(card) in results" v-bind:key="card.id" id="cardinfo">
         {{card.name}}
@@ -34,25 +34,46 @@ export default {
   },
   methods: {
     getResults(newSearchCard) {
-      const { cardName, cardColor, setName, cardType } = newSearchCard;
-      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}&setName=${setName}&types=${cardType}`)
+      const { cardName, cardColor, setName, cardType, pageNumber } = newSearchCard;
+      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}&setName=${setName}&types=${cardType}&page=${pageNumber}&pageSize=20`)
       .then(res => {
         this.results = res.data.cards.filter(card => !!card.multiverseid)})
     },
+    nextPage(newSearchCard) {
+      const { cardName, cardColor, setName, cardType, pageNumber } = newSearchCard;
+      this.results = [{
+        name: "Loading..."
+      }];
+      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}&setName=${setName}&types=${cardType}&page=${pageNumber}&pageSize=20`)
+      .then(res => {
+        this.results = res.data.cards.filter(card => !!card.multiverseid)})
+         if(this.results.length < 1) {
+          alert("Sorry, no more results to display!");
+         }
+    },
+    prevPage(newSearchCard) {
+      const { cardName, cardColor, setName, cardType, pageNumber } = newSearchCard;
+      this.results = [{
+        name: "Loading..."
+      }];
+      axios.get(`https://api.magicthegathering.io/v1/cards?name=${cardName}&colors=${cardColor}&setName=${setName}&types=${cardType}&page=${pageNumber}&pageSize=20`)
+      .then(res => {
+        this.results = res.data.cards.filter(card => !!card.multiverseid)})
+    }
   }
 }
 </script>
 
 <style>
 body {
-  background: #e6ffec;
+  background: #191a21;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: white;
   margin-top: 60px;
 }
 img {
@@ -61,8 +82,11 @@ img {
 
 }
 #cardinfo {
-  border-top: 1px dotted black;
+  border-top: 1px dotted white;
   clear: both;
   text-align: left;
+}
+ul {
+  color: white;
 }
 </style>

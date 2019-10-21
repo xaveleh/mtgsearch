@@ -42,6 +42,8 @@
     <label>White</label>
     </div>
     <input type="submit" value="Submit" />
+    <input type="button" @click="nextPage" value="Next Page">
+    <input type="button" @click="prevPage" value="Previous Page" v-bind:disabled="pageNumber <= 1">
 </form>
 </template>
 
@@ -54,7 +56,8 @@ export default {
             cardColor: [],
             setName: '',
             inclusiveSearch: false,
-            cardType: ''
+            cardType: '',
+            pageNumber: 1
         }
     },
     methods: {
@@ -65,14 +68,42 @@ export default {
                 cardColor: this.cardColor,
                 setName: this.setName,
                 inclusiveSearch: this.inclusiveSearch,
-                cardType: this.cardType
+                cardType: this.cardType,
+                pageNumber: 1
             }
             this.$emit('get-results', newSearchCard);
-            this.cardName = '';
-            this.cardColor = [];
-            this.setName = '';
             this.inclusiveSearch = false;
-            this.cardType = '';
+            this.cardName = this.cardName;
+            this.cardColor = this.cardColor;
+            this.setName = this.setName;
+            this.cardType = this.cardType;
+            this.pageNumber = 1;
+        },
+        nextPage(e) {
+            e.preventDefault();
+            const newSearchCard = {
+                cardName: this.cardName,
+                cardColor: this.cardColor,
+                setName: this.setName,
+                inclusiveSearch: this.inclusiveSearch,
+                cardType: this.cardType,
+                pageNumber: this.pageNumber += 1
+            }
+            this.$emit('next-page', newSearchCard);
+            this.inclusiveSearch = false;
+        },
+        prevPage(e) {
+            e.preventDefault();
+            const newSearchCard = {
+                cardName: this.cardName,
+                cardColor: this.cardColor,
+                setName: this.setName,
+                inclusiveSearch: this.inclusiveSearch,
+                cardType: this.cardType,
+                pageNumber: this.pageNumber -= 1
+            }
+            this.$emit('prev-page', newSearchCard);
+            this.inclusiveSearch = false;
         }
     }
 }
