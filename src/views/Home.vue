@@ -1,12 +1,27 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-link to="/about">About  </router-link>  
+    <router-link to='/deckbuilder'>Deck Builder</router-link>
+    <SearchBar v-on:get-results="getResults" v-on:next-page="nextPage" v-on:prev-page="prevPage"/>
+    <ul>
+      <li v-for="(card) in results" v-bind:key="card.id" id="cardinfo">
+        {{card.name}}
+        <em>{{card.setName}}</em>
+        <img v-bind:src="card.imageUrl" />
+        <button>Add to my deck...</button>
+        <ul v-for="(ruling) in card.rulings" v-bind:key="ruling.text">
+          <li>
+            {{ruling.text}}
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
 
-import SearchBar from './components/SearchBar';
+import SearchBar from '../components/SearchBar';
 import axios from 'axios';
 
 export default {
